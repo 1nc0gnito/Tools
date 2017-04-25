@@ -1,6 +1,6 @@
 import rsaxploit.rsa as rsa
-import multibase.multibase as mb
-import getopt
+import baseconverter as bc
+import argparse
 
 if __name__ == '__main__':
     # Testing some values to validate package are working
