@@ -96,6 +96,22 @@ def hex2ascii(hexstring):
     """
     return hexstring.decode('hex')
 
+def hex2int(hexstring):
+    """
+        Converts a hex string into integer
+        ex. 65 => 97
+    """
+    if '0x' in hexstring:
+        hstr = hexstring.replace('0x', '')
+    return int(hexstring, 16)
+
+def int2hex(integer):
+    """
+        Converts an integer string into hex string
+        ex. 97 => 65
+    """
+    return hex(int(integer))[2:]
+
 def __openfile(file):
     """
         Opens a file and return its content
@@ -106,20 +122,14 @@ def __openfile(file):
     f.close()
     return content
 
-def b64decoder(b64EncFile, recursive=True):
+def b64decoder(b64EncFile, isFile=True):
     """
         Decodes a base64 string recursively by default
     """
-    b64str = __openfile(b64EncFile)
-    if recursive:
-        while True:
-            try:
-                b64str = base64.b64decode(b64str)
-            except:
-                break
-    else:
+    b64str = __openfile(b64EncFile) if isFile else b64EncFile
+    while True:
         try:
             b64str = base64.b64decode(b64str)
         except:
-            print 'invalid'
+            break
     return b64str

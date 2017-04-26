@@ -1,17 +1,71 @@
 import rsaxploit.rsa as rsa
-import baseconverter as bc
+import baseconverter.baseconverter as bc
 import argparse
+import sys
+
+def converter(args):
+    option = args.c2
+    value = args.type
+    if option == 'b64':
+        print bc.b64decoder(value)
+    elif option == 'h2i':
+        print bc.hex2int(value)
+    elif option == 'h2a':
+        print bc.hex2ascii(value)
+    elif option == 'a2h':
+        print bc.ascii2hex(value)
+    elif option == 'b2a':
+        print bc.binary2ascii(value)
+    elif option == 'a2b':
+        print bc.ascii2binary(value)
+    elif option =='i2h':
+        print bc.int2hex(value)
+
+def rsa_xploit(args):
+    verbose = args.verbose
+    option = args.type
+    if verbose:
+        rsa.VERBOSE = True
+
+    if option == 'lowN':
+        if args.N and args.p and args.q and args.e and args.c:
+            d = rsa.low_n_attack(args.N, args.e, args.p, args.q)
+            print rsa.decrypt(args.c, d, args.N)
+        elif args.N and args.e and args.c:
+            d = rsa.low_n_attack(args.N, args.e)
+            print rsa.decrypt(args.c, d, args.N)
+        elif args.p and args.q and args.e and args.c:
+            N = args.p * args.q
+            d = rsa.low_n_attack(N, args.e, args.p, args.q)
+            print decrypt(args.c, d, N)
+    elif option == 'wieners':
+        if args.N and args.e and args.c:
+            d = rsa.wieners_attack(args.e, args.N)
+            print rsa.decrypt(args.c, d, args.N)
+    elif option == 'PEM':
+        if args.N and args.e:
+            print rsa.getPemRepresentation(args.N, args.e)
+    elif option == 'DER':
+        if args.N and args.e:
+            print rsa.getDerRepresentation(args.N, args.e)
 
 if __name__ == '__main__':
-    # Testing some values to validate package are working
-    n = int(0x00aa18aba43b50deef38598faf87d2ab634e4571c130a9bca7b878267414faab8b471bd8965f5c9fc3818485eaf529c26246f3055064a8de19c8c338be5496cbaeb059dc0b358143b44a35449eb264113121a455bd7fde3fac919e94b56fb9bb4f651cdb23ead439d6cd523eb08191e75b35fd13a7419b3090f24787bd4f4e1967)
-    p = 10272507984759283768184415823001782212803274857375688280678837373891542550268707041884550332766324551399377658257839771525050268735407698239431037942292507
-    q = 11627708886355621199735412802139569467434585415329927587631124833895119494317513796736733307101074383089140602809318017663635247723052449998061148241098917
 
-    e = 65537
+    prog = sys.argv[1] if sys.argv[1] else '-help'
+    parser = argparse.ArgumentParser()
 
-    dk = int(0x1628e4a39ebea86c8df0cd11572691017cfefb14ea1c12e1dedc7856032dad0f961200a38684f0a36dca30102e2464989d19a805933794c7d329ebc890089d3c4c6f602766e5d62add74e82e490bbf92f6a482153853031be2844a700557b97673e727cd1316d3e6fa7fc991d4227366ec552cbe90d367ef2e2e79fe66d26311)
-
-    d = rsa.low_n_attack(p,q,e)
-    if d == dk:
-        print 'awesome'
+    if prog == '-convert':
+        parser.add_argument('-convert', dest='c2' ,help='Base Converter', choices=['b64', 'h2a', 'a2h', 'b2a', 'a2b', 'h2i', 'i2h'])
+        parser.add_argument('type', type=str, help='String you want to convert')
+        parser.add_argument('-s', type=str, help='As string (use on b64 option only)')
+        converter(parser.parse_args())
+    elif prog == '-rsa':
+        parser.add_argument('-rsa', dest='type', help='Xploit RSA', choices=['lowN', 'wieners', 'PEM', 'DER'])
+        parser.add_argument('-n', dest='N', type=int, help='RSA Modulus')
+        parser.add_argument('-p', dest='p', type=int, help='RSA Coprime p')
+        parser.add_argument('-q', dest='q', type=int, help='RSA Coprime q')
+        parser.add_argument('-e', dest='e', type=int, help='RSA public exponent')
+        parser.add_argument('-d', dest='d', type=int, help='RSA private exponent')
+        parser.add_argument('-c', dest='c', type=int, help='RSA ciphertext')
+        parser.add_argument('-v', dest='verbose', help='Gives more information' ,action='store_const', const=True)
+        rsa_xploit(parser.parse_args())
