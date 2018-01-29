@@ -3,11 +3,17 @@ import baseconverter.baseconverter as bc
 import argparse
 import sys
 
+__CONVERTER_CHOICES = ['b64', 'h2a', 'a2h', 'b2a', 'a2b', 'h2i', 'i2h', 'i2b', 'b2i']
+
+
 def converter(args):
     option = args.c2
     value = args.type
     if option == 'b64':
-        print bc.b64decoder(value)
+        if args.f == 'on':
+            print bc.b64decoder(value)
+        else:
+            print bc.b64decoder(value, isFile=False)
     elif option == 'h2i':
         print bc.hex2int(value)
     elif option == 'h2a':
@@ -20,6 +26,10 @@ def converter(args):
         print bc.ascii2binary(value)
     elif option =='i2h':
         print bc.int2hex(value)
+    elif option == 'i2b':
+        print bc.int2binary(value)
+    elif option == 'b2i':
+        print bc.binary2int(value)
 
 def rsa_xploit(args):
     verbose = args.verbose
@@ -55,9 +65,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     if prog == '-convert':
-        parser.add_argument('-convert', dest='c2' ,help='Base Converter', choices=['b64', 'h2a', 'a2h', 'b2a', 'a2b', 'h2i', 'i2h'])
+        parser.add_argument('-convert', dest='c2' ,help='Base Converter', choices=__CONVERTER_CHOICES)
         parser.add_argument('type', type=str, help='String you want to convert')
-        parser.add_argument('-s', type=str, help='As string (use on b64 option only)')
+        parser.add_argument('-f', dest='f', help='As string (use on b64 option only)', choices=['on', 'off'])
         converter(parser.parse_args())
     elif prog == '-rsa':
         parser.add_argument('-rsa', dest='type', help='Xploit RSA', choices=['lowN', 'wieners', 'PEM', 'DER'])

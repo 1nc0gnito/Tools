@@ -1,14 +1,14 @@
 import base64
 
-__BYTE = 8
+__BYTE = 32 # amount of bytes that can be represented in binary change if needed to convert numbers bigger than 2^32
 
 def padbinary(binarystring):
     """
         Pads with leading zeros if binary string ('00001111')
         lenght is not a multiple of 8
     """
-    if len(binarystring) % 8:
-        while len(binarystring) % 8:
+    if len(binarystring) % __BYTE:
+        while len(binarystring) % __BYTE:
             binarystring = '0' + binarystring
     return binarystring
 
@@ -20,9 +20,9 @@ def binaryserialize(binarystring):
     bytelist = []
     bstr = ''
     padded = padbinary(binarystring)
-    for i in range(len(binarystring)):
-        bstr += binarystring[i]
-        if (i + 1) % 8 == 0:
+    for i in range(len(padded)):
+        bstr += padded[i]
+        if (i + 1) % __BYTE == 0:
             bytelist.append(bstr)
             bstr = ''
     return bytelist
@@ -65,7 +65,7 @@ def int2binary(ascii_n_rep):
     """
     byte = ''
     for i in range(__BYTE):
-        if ascii_n_rep & (1 << i):
+        if int(ascii_n_rep) & (1 << i):
             byte += '1'
         else:
             byte += '0'
@@ -130,6 +130,7 @@ def b64decoder(b64EncFile, isFile=True):
     while True:
         try:
             b64str = base64.b64decode(b64str)
+            print b64str
         except:
             break
     return b64str
