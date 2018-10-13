@@ -27,6 +27,36 @@ def prime_factors(n):
         factors.append(n)
     return factors
 
+def primes(nth):
+    primes_arr = []
+    i = 2
+    while(i < nth):
+        j = 2
+        while(j <= (i / j)):
+            if not(i % j): break
+            j = j + 1
+        if (j > i / j) : primes_arr.append(i)
+        i = i + 1
+    return primes_arr
+
+# def sieve_of_erasthothenes(n):
+#     primes_arr = []
+#     for p in range(2, n + 1):
+#         primes_arr.push(p)
+#     for p in range(2, )
+
+def floor_sqrt(n):
+    fn = 0
+    for i in range(1, n):
+        if not i * i > n:
+            fn = i * i
+        else:
+            break
+    return fn
+
+
+
+
 def get_sqrt(n):
     if n < 0:
         raise ValueError('Square Root not define for negative numbers')
